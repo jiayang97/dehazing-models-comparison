@@ -79,6 +79,3 @@ This project is part of my academic work at Georgia Tech. Please respect the lic
 - Original authors of FFA-Net and Diffusion Net
 - DOTA dataset creators
 - All contributors and supporters of this project
-
----
-*This project is created as part of the requirements for the Georgia Tech OMSCS program. All rights reserved.*
