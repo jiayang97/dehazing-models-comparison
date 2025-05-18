@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dota Hazy Image Dehazing, FFA-Net and Diffusion Net</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <h1 class="title">Image Dehazing Comparison</h1>
+    <p class="description">Compare the performance of FFA-Net and Diffusion Net models on dehazing hazy images. 
+        Select any hazy image from the top panel and use either model to generate a dehazed version.</p>
+    
+    <div class="main-container">
+        <div class="images-section">
+            <h2 class="section-title">Hazy Images</h2>
+            <p class="instruction">Select an image to dehaze</p>
+            <div class="hazy-images">
+                {% for image in hazy_images %}
+                <img src="{{ url_for('serve_image', filename=image) }}" 
+                     class="hazy-image" 
+                     onclick="selectImage(this, '{{ image }}')"
+                     alt="{{ image }}">
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="models-section">
+            <div class="models-grid">
+                <div class="model-container">
+                    <h2>FFA Model</h2>
+                    <div class="result-container">
+                        <div id="ffa-result"></div>
+                    </div>
+                    <div class="timer" id="ffa-timer"></div>
+                    <button id="ffa-button" onclick="dehaze('ffa')">Dehaze with FFA-Net</button>
+                </div>
+                
+                <div class="model-container">
+                    <h2>Diffusion Model</h2>
+                    <div class="result-container">
+                        <div id="diffusion-result"></div>
+                    </div>
+                    <div class="timer" id="diffusion-timer"></div>
+                    <button id="diffusion-button" onclick="dehaze('diffusion')">Dehaze with Diffusion Net</button>
+                    <p class="processing-note">Note: Diffusion model processing may take 2-3 minutes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedImage = null;
+        let startTime = null;
+        let timerInterval = null;
+
+        function selectImage(img, imageName) {
+            document.querySelectorAll('.hazy-image').forEach(i => i.classList.remove('selected'));
+            img.classList.add('selected');
+            selectedImage = imageName;
+        }
+
+        function updateTimer(modelType) {
+            const timerDiv = document.getElementById(`${modelType}-timer`);
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            timerDiv.textContent = `Processing time: ${minutes}m ${seconds}s`;
+        }
+
+        function setLoading(modelType, isLoading) {
+            const button = document.getElementById(`${modelType}-button`);
+            const timerDiv = document.getElementById(`${modelType}-timer`);
+            
+            if (isLoading) {
+                button.textContent = 'Dehazing...';
+                button.disabled = true;
+                startTime = Date.now();
+                timerDiv.textContent = 'Processing time: 0m 0s';
+                timerInterval = setInterval(() => updateTimer(modelType), 1000);
+            } else {
+                button.textContent = `Dehaze with ${modelType === 'ffa' ? 'FFA-Net' : 'Diffusion Net'}`;
+                button.disabled = false;
+                clearInterval(timerInterval);
+            }
+        }
+
+        function dehaze(modelType) {
+            if (!selectedImage) {
+                alert('Please select an image first');
+                return;
+            }
+
+            setLoading(modelType, true);
+
+            const formData = new FormData();
+            formData.append('image_name', selectedImage);
+            formData.append('model_type', modelType);
+
+            fetch('/dehaze', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const imageUrl = URL.createObjectURL(blob);
+                const resultDiv = document.getElementById(modelType === 'ffa' ? 'ffa-result' : 'diffusion-result');
+                resultDiv.innerHTML = `<img src="${imageUrl}" alt="Dehazed result">`;
+                setLoading(modelType, false);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error processing image');
+                setLoading(modelType, false);
+            });
+        }
+    </script>
+</body>
+</html>
