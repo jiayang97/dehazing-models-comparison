@@ -40,15 +40,6 @@ ENV/
 ehthumbs.db
 Thumbs.db
 
-# Project specific
-trained_models/
-*.pth
-*.pt
-*.ckpt
-*.pkl
-*.h5
-*.onnx
-
 # Logs
 *.log
 logs/
