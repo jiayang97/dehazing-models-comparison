@@ -10,7 +10,7 @@ This web-based comparison tool implements two image dehazing models used in the 
 - Real-time processing with FFA-Net and Diffusion Net models
 - Side-by-side comparison of dehazing results
 
-## Screenshots
+## Webpage
 ![Dehazing Models Web Interface](static/dehazing_models_webpage.png)
 *Web interface showing the comparison between FFA-Net and Diffusion Net dehazing models*
 
@@ -79,13 +79,6 @@ This project is part of my academic work at Georgia Tech. Please respect the lic
 - Original authors of FFA-Net and Diffusion Net
 - DOTA dataset creators
 - All contributors and supporters of this project
-
-## Future Work
-- [ ] Add support for custom image uploads
-- [ ] Implement additional dehazing models
-- [ ] Add quantitative metrics for comparison
-- [ ] Optimize processing time for Diffusion Net
-- [ ] Add batch processing capability
 
 ---
 *This project is created as part of the requirements for the Georgia Tech OMSCS program. All rights reserved.*
